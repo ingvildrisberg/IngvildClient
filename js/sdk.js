@@ -1,5 +1,5 @@
 const SDK = {
-  serverURL: "http://dis-bookstore.herokuapp.com/api",
+  serverURL: "http://localhost:8080/api",
   request: (options, cb) => {
 
     let headers = {};
@@ -25,27 +25,27 @@ const SDK = {
     });
 
   },
-  Book: {
-    addToBasket: (book) => {
-      let basket = SDK.Storage.load("basket");
+  Event: {
+    addToBasket: (event) => {
+      let basket = SDK.Storage.load("event");
 
       //Has anything been added to the basket before?
       if (!basket) {
         return SDK.Storage.persist("basket", [{
           count: 1,
-          book: book
+          event: event
         }]);
       }
 
-      //Does the book already exist?
-      let foundBook = basket.find(b => b.book.id === book.id);
-      if (foundBook) {
-        let i = basket.indexOf(foundBook);
+      //Does the event already exist?
+      let 'foundEvent = basket.find(e => e.idEvent === idEvent);
+      if (foundEvent) {
+        let i = basket.indexOf(foundEvent);
         basket[i].count++;
       } else {
         basket.push({
           count: 1,
-          book: book
+          event: event
         });
       }
 
