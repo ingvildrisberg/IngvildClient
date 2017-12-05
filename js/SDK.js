@@ -229,7 +229,6 @@ const SDK = {
                   const currentUser = SDK.Student.current();
                   if (currentUser) {
                       $(".navbar-right").html(`
-            <li><a href="my-page.html">Your orders</a></li>
             <li><a href="#" id="logout-link">Logout</a></li>
           `);
                   } else {
@@ -237,7 +236,17 @@ const SDK = {
             <li><a href="login.html">Log-in <span class="sr-only">(current)</span></a></li>
           `);
                   }
-                  $("#logout-link").click(() => SDK.Student.logOut());
+                  $("#logout-link").click(function() {
+                      SDK.logOut((err, data) => {
+                          if (err && err.xhr.staus === 401) {
+                              $(".form-group").addClass("has-error");
+                          } else {
+                              localStorage.removeItem("token");
+                              localStorage.removeItem("idStudent");
+                              window.location.href = "login.html";
+                          }
+                      });
+                  });
                   cb && cb();
               });
           }
