@@ -1,6 +1,6 @@
 $(document).ready(() => {
 
-  SDK.User.loadNav();
+  SDK.Student.loadNav();
 
 
   const $modalTbody = $("#basket-tbody");
@@ -8,7 +8,7 @@ $(document).ready(() => {
   const $nothingInBasketContainer = $("#nothing-in-basket-container");
 
   function loadBasket() {
-    const currentUser = SDK.User.current();
+    const currentUser = SDK.Student.current();
     const basket = SDK.Storage.load("basket") || [];
     let total = 0;
 

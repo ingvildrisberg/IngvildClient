@@ -1,41 +1,42 @@
 $(document).ready(() => {
 
-  SDK.User.loadNav();
-  const $bookList = $("#book-list");
+  SDK.Student.loadNav();
+  const $eventList = $("#event-list");
 
-  SDK.Book.findAll((err, books,) =>      {
+  SDK.Event.getEvents((err, events) =>      {
+    if (err) throw err;
+    events.forEach((event))
 
 
            books.forEach( (book) => {
 
-               const bookHtml = `
+               const eventHtml = `
         <div class="col-lg-4 book-container">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">${book.title}</h3>
+                    <h3 class="panel-title">${event.eventName}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="col-lg-4">
-                        <img src="${book.imgUrl}"/>
-                    </div>
-                    <div class="col-lg-8">
                       <dl>
-                        <dt>Subtitle</dt>
-                        <dd>${book.subtitle}</dd>
-                        <dt>Publisher</dt>
-                        <dd>${book.publisher}</dd>
-                        <dt>ISBN</dt>
-                        <dd>${book.isbn}</dd>
+                        <dt>Location</dt>
+                        <dd>${event.location}</dd>
+                        <dt>Description</dt>
+                        <dd>${event.description}</dd>
+                        <dt>Event Date</dt>
+                        <dd>${book.eventDate}</dd>
+                         <dt>Owner</dt>
+                        <dd>${book.owner}</dd>
                       </dl>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="row">
                         <div class="col-lg-4 price-label">
-                            <p>Kr. <span class="price-amount">${book.price}</span></p>
+                            <p>Kr. <span class="price-amount">${event.price}</span></p>
                         </div>
                         <div class="col-lg-8 text-right">
-                            <button class="btn btn-success purchase-button" data-book-id="${book.id}">Add to basket</button>
+                            <button class="btn btn-success purchase-button" data-event-id="${event.id}">Add to basket</button>
                         </div>
                     </div>
                 </div>
@@ -43,17 +44,17 @@ $(document).ready(() => {
         </div>`;
 
 
-             $bookList.append(bookHtml);
+             $eventList.append(eventHtml);
 
 
            });
 
 
              $(".purchase-button").click(function() {
-               $("#purchase-modal").modal("toggle");
-               const bookId = $(this).data("book-id");
-              const book = books.find((book) => book.id === bookId);
-              SDK.Book.addToBasket(book);
+               const idEvent = $(this).data("event-id");
+              const event = events.find((event) => event.id === idEvent);
+              SDK.Events.addToBasket(event);
+              $("#purchase-modal").modal("toggle");
               });
 
 
@@ -61,18 +62,18 @@ $(document).ready(() => {
 
     $("#purchase-modal").on("shown.bs.modal", () => {
       const basket = SDK.Storage.load("basket");
-      const $modalTbidy = $("#modal-tbody");
-      basket.forEach((book) => {
+      const $modalTbody = $("#modal-tbody");
+      $modalTbody.empty();
+      basket.forEach((entry) => {
+          const total = entry.event.price * entry.count;
 
           $modalTbody.append(`
         <tr>
             <td>
-                <img src="${entry.book.imgUrl}" height="60"/>
-            </td>
-            <td>${entry.book.title}</td>
+            <td>${entry.event.eventName}</td>
             <td>${entry.count}</td>
-            <td>kr. ${entry.book.price}</td>
-            <td>kr. 0</td>
+            <td>kr. ${entry.event.price}</td>
+            <td>kr. ${total}</td>
         </tr>
       `);
 
