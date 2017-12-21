@@ -8,9 +8,9 @@ const SDK = {
       headers: options.headers,
       contentType: "application/json",
       dataType: "json",
-      data: JSON.stringify(options.data),
+      data: JSON.stringify(SDK.Encryption.encrypt(JSON.stringify(options.data))),
       success: (data, status, xhr) => {
-        cb(null, data, status, xhr);
+        cb(null, SDK.Encryption.decrypt(data), status, xhr);
       },
       error: (xhr, status, errorThrown) => {
         cb({xhr: xhr, status: status, error: errorThrown});
@@ -18,6 +18,8 @@ const SDK = {
     });
 
   },
+    //This class makes it possible to pass data to the server side
+
   Event: {
       findAll: (cb, events) => {
 
@@ -145,29 +147,8 @@ const SDK = {
               SDK.request({method: "GET", url: "/authors"}, cb);
           }
       },
-      Order: {
-          create: (data, cb) => {
-              SDK.request({
-                  method: "POST",
-                  url: "/orders",
-                  data: data,
-                  headers: {authorization: SDK.Storage.load("tokenId")}
-              }, cb);
-          },
-          findMine: (cb) => {
-              SDK.request({
-                  method: "GET",
-                  url: "/orders/" + SDK.User.current().id + "/allorders",
-                  headers: {
-                      authorization: SDK.Storage.load("tokenId")
-                  }
-              }, cb);
-          }
-      },
+
       Student: {
-          findAll: (cb) => {
-              SDK.request({method: "GET", url: "/staffs"}, cb);
-          },
           current: () => {
               return SDK.Storage.load("user");
           },
@@ -184,11 +165,9 @@ const SDK = {
                   //On login-error
                   if (err) return cb(err);
 
-                  SDK.Storage.persist("token", data.token.token);
+                  SDK.Storage.persist("token", JSON.parse(data));
                   SDK.Storage.persist("user", data);
 
-                  //SDK.Storage.persist("userId", data.userId);
-                  //SDK.Storage.persist("user", data.user);
 
                   cb(null, data);
 
@@ -224,6 +203,7 @@ const SDK = {
 
               }, cb);
           },
+          //Method for loading Nav bar and controlling if it should show log in or log out
           loadNav: (cb) => {
               $("#nav-container").load("nav.html", () => {
                   const currentUser = SDK.Student.current();
@@ -236,6 +216,7 @@ const SDK = {
             <li><a href="login.html">Log-in <span class="sr-only">(current)</span></a></li>
           `);
                   }
+                  //Removes token and student id from localstorage when log out button is clicked
                   $("#logout-link").click(function() {
                       SDK.logOut((err, data) => {
                           if (err && err.xhr.staus === 401) {
@@ -243,7 +224,7 @@ const SDK = {
                           } else {
                               localStorage.removeItem("token");
                               localStorage.removeItem("idStudent");
-                              window.location.href = "login.html";
+                              window.location.href = "index.html";
                           }
                       });
                   });
@@ -270,8 +251,9 @@ const SDK = {
           window.location.href = "index.html";
 
       },
+    //Method for storing token, id etc.
       Storage: {
-          prefix: "BookStoreSDK",
+          prefix: "",
           persist: (key, value) => {
               window.localStorage.setItem(SDK.Storage.prefix + key, (typeof value === 'object') ? JSON.stringify(value) : value)
           },
@@ -287,7 +269,41 @@ const SDK = {
           remove: (key) => {
               window.localStorage.removeItem(SDK.Storage.prefix + key);
           }
-      }
+      },
+
+     Encryption: {
+
+//For encrypting data sent from client to server
+
+         encrypt: (encrypt) => {
+          if (encrypt !== undefined && encrypt.length !== 0) {
+              const fields = ['J', 'M', 'F'];
+              let encrypted = '';
+              for (let i = 0; i < encrypt.length; i++) {
+                  encrypted += (String.fromCharCode((encrypt.charAt(i)).charCodeAt(0) ^(fields[i % fields.length]).charCodeAt(0)))
+              }
+              return encrypted;
+          } else {
+              return encrypt;
+          }
+      },
+
+      //For decrypting data recived from serverside
+
+          decrypt: (decrypt) => {
+          if (decrypt.length > 0 && decrypt !== undefined) {
+              const fields = ['J', 'M', 'F'];
+              let decrypted = '';
+              for (let i = 0; i < decrypt.length; i++) {
+                  decrypted += (String.fromCharCode((decrypt.charAt(i)).charCodeAt(0) ^(fields [i % fields.length]).charCodeAt(0)))
+              }
+              return decrypted;
+          } else {
+              return decrypt;
+          }
+          }
+      },
+
 
 };
 

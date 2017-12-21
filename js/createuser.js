@@ -2,6 +2,8 @@ $(document).ready(() => {
 
     SDK.Student.loadNav();
 
+    //gir knappen funksjonalitet så det er mulig å hente informasjonen som blir taset inn og oprette en bruker
+
     $("#create-button").click(() => {
 
         const firstname = $("#inputFirstname").val();
@@ -22,5 +24,9 @@ $(document).ready(() => {
         });
 
     })
+
+    $("#home-button").click(() => {
+        window.location.href = "index.html";
+    });
 
 });

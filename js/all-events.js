@@ -18,7 +18,7 @@ $(document).ready(() => {
                     <h3 class="panel-title">${event.eventName}</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="col-lg-8">
+                    <div class="col-lg-12">
                       <dl>
                         <dt>Date</dt>
                         <dd>${event.eventDate}</dd>
@@ -31,10 +31,10 @@ $(document).ready(() => {
                 </div>
                 <div class="panel-footer">
                     <div class="row">
-                        <div class="col-lg-4 price-label">
+                        <div class="col-lg-12 price-label">
                             <p>Kr. <span class="price-amount">${event.price}</span></p>
                         </div>
-                        <div class="col-lg-8 text-right">
+                        <div class="col-lg-12">
                             <button class="btn-sm btn-primary seeAttendingStudents" data-event-id="${event.idEvent}"
                             data-toggle="modal" data-target="#attendingStudentsModal">See attendece</button>
                               
@@ -77,13 +77,14 @@ $(document).ready(() => {
             SDK.Event.getAttendingStudents(idEvent, (err, students) => {
                 if(students != null){
                     students = JSON.parse(students);
+                    $seeAttendingStudents.empty();
                     students.forEach((student) => {
                         console.log(student.firstName);
 
                         const attendingStudentsHtml = `
                         <p>${student.firstName} ${student.lastName}</p>
                         `;
-                        $seeAttendingStudents.empty();
+
                         $seeAttendingStudents.append(attendingStudentsHtml);
                     });
                 } else {

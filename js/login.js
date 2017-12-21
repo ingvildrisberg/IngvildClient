@@ -15,7 +15,7 @@ $(document).ready(() => {
           window.alert("Can not log in. Make sure username and password is correct.");
         console.log("Something went wrong, please try again")
       } else {
-        window.location.href = "index.html";
+        window.location.href = "home.html";
       }
     });
 
